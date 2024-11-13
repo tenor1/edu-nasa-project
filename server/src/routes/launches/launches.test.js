@@ -19,15 +19,18 @@ describe('Test POST /launches', () => {
     launchDate: 'January 4, 2028'
   }
 
+  const launchDataWithoutDate = { ...completeLaunchData };
+  delete launchDataWithoutDate.launchDate;
+
+  const launchDataWithInvalidDate = { ...completeLaunchData };
+  launchDataWithInvalidDate.launchDate = 'invalid date';
+
   test('It should respond with 201 created', async () => {
     const response = await request(app)
       .post('/launches')
       .send(completeLaunchData)
       .expect('Content-Type', /json/)
       .expect(201);
-    
-    const launchDataWithoutDate = { ...completeLaunchData };
-    delete launchDataWithoutDate.launchDate;
 
     const requestDate = new Date(completeLaunchData.launchDate).valueOf();
     const responseDate = new Date(response.body.launchDate).valueOf();
@@ -36,6 +39,26 @@ describe('Test POST /launches', () => {
     expect(response.body).toMatchObject(launchDataWithoutDate);
   });
 
-  test('It should catch missing required properties', () => {});
-  test('It should catch invalid dates', () => {});
+  test('It should catch missing required properties', async () => {
+    const response = await request(app)
+      .post('/launches')
+      .send(launchDataWithoutDate)
+      .expect('Content-Type', /json/)
+      .expect(400);
+
+    expect(response.body).toStrictEqual({
+      error: 'Missing required launch property'
+    });
+  });
+  test('It should catch invalid dates', async () => {
+    const response = await request(app)
+      .post('/launches')
+      .send(launchDataWithInvalidDate)
+      .expect('Content-Type', /json/)
+      .expect(400);
+
+    expect(response.body).toStrictEqual({
+      error: 'Invalid launch date'
+    });
+  });
 });
