@@ -1,5 +1,5 @@
 const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_LIMIT = 1; // 0;
+const DEFAULT_PAGE_LIMIT = 100; // 0;
 
 function getPagination(query) {
   const page = Math.abs(query.page) || DEFAULT_PAGE;
