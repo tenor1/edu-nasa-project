@@ -1,10 +1,12 @@
 const request = require('supertest');
 const app = require('../../app');
 const { mongoConnect, mongoDisconnect } = require('../../services/mongo');
+const { loadLaunchData } = require('../../models/launches.model');
 
 describe('Launches API', () => {
   beforeAll(async () => {
     await mongoConnect();
+    await loadLaunchData();
   });
 
   afterAll(async () => {
@@ -15,7 +17,7 @@ describe('Launches API', () => {
     test('It should respond with 200 success', async () => {
       const response = await request(app)
         .get('/v1/launches')
-        .expect('Content-Type', /json/)
+        .expect('Content-Type', /json/) 
         .expect(200);
     });
   });
